@@ -90,24 +90,22 @@ namespace espressopp {
             ss << particleIDToType.find(i+1)->second;
             myfile << setiosflags(ios::right) << setw(5) << (string("T") + ss.str()) << resetiosflags(ios::right);
             myfile << setw(5) << i+1;    //NOTE this is the actual atom number - wrapped at 99999
-            // while get token 
+            // while get token
             // print with setw(8) << setprecision(3)
             // if more than 3
             // change precision to 4
-            RealND line(cei.nextProperties()); //FIXME create line every atom?
-            ii = line.begin();
-            ind=0; //FIXME ugly! how do I know the number of a loop when using iterators?
-            while (ii != line.end() && ind < 3){
-              myfile << setw(8) << setprecision(3) << length_factor * *ii;
-              ii++;
-              ind++;
+            for (int j = 0; j < 3; j++) {
+            	// coordinates in format %8.3f
+            	myfile << setw(8) << setprecision(3) << length_factor * cei.currentProperties()[j];
             }
-            while (ii != line.end()){
-              myfile << setw(8) << setprecision(4) << length_factor * *ii;
-              ii++;
-            }
-            myfile << endl;
 
+            for (int j = 3; j < cei.currentProperties().getDimension(); j++) {
+            	// velocities in format %8.4f
+            	myfile << setw(8) << setprecision(4) << length_factor * cei.currentProperties()[j];
+            }
+
+            myfile << endl;
+            cei.incrementIterator();
           }
           Real3D Li = system->bc->getBoxL();
           myfile << setw(10) << setprecision(5) << Li[0] * length_factor 
